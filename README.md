@@ -321,6 +321,34 @@ For NATS servers `< v2.9.22` there's an option to use [JSONP](https://en.wikiped
 
 This option must be explicitly enabled in the app settings.
 
+### Monitoring API Endpoints
+
+| Endpoint | Page | Description |
+| -------- | ---- | ----------- |
+| `/varz` | Overview, Info | General server information and stats |
+| `/connz` | Overview, Connections | Client connection information |
+| `/routez` | Routes | Cluster route connections |
+| `/gatewayz` | Gateways | Gateway configuration and connections |
+| `/leafz` | Leaf Nodes | Leaf node connections |
+| `/accountz` | Accounts | Account information and details |
+| `/accstatz` | Account Stats | Per-account statistics |
+| `/subsz` | Subscriptions | Subscription routing and cache stats |
+| `/jsz` | JetStream | JetStream information, streams, consumers |
+| `jsz/assets/{stream}/stream/messages` | JetStream (MessageViewer, KVStoreBrowser) | Stream messages and KV entries |
+
+## Changelog
+
+### v0.4.0
+
+- **6 new monitoring pages**: Routes, Gateways, Leaf Nodes, Accounts, Account Stats, Subscriptions
+- **Info page enhancements**: Cluster configuration card, Gateway configuration card
+- **Streams sorting**: Sort streams by Name, Created, Consumers, Messages, Data Size, Subjects
+- **Date formatting fix**: All timestamps now consistently use UTC
+- **Bug fix**: `fetchStreamMessage` now correctly uses `streamName` in API path construction
+- **Component consistency**: Replaced inline modal implementations with project `Modal` component in KVStoreBrowser, MessageViewer, and StreamBrowser
+- **Type safety**: Replaced `any` types with proper TypeScript types; added `isApiError` type guard
+- **Query optimization**: KVStoreBrowser key filter uses client-side filtering instead of re-triggering API requests
+
 ## Service Worker
 
 The service worker is generated after the site is built, it's available at `src/sw.ts`, it's built by `vite` using the script `scripts/build-sw.mjs` and then the [Workbox](https://developer.chrome.com/docs/workbox) precache manifest is injected by the `scripts/workbox.mjs` script.
