@@ -1,7 +1,11 @@
 import { createSignal, createMemo, For, Show } from "solid-js";
 import { createQuery } from "@tanstack/solid-query";
 
-import type { StreamMessage, StreamMessagesOptions } from "~/types";
+import type {
+  StreamMessage,
+  StreamMessagesOptions,
+  StreamMessagesResponse,
+} from "~/types";
 import { fetchStreamMessage } from "~/lib/info";
 import { useStore } from "~/components/context/store";
 import { useSettings } from "~/components/context/settings";
@@ -23,21 +27,35 @@ interface MessageItem {
   time: string;
 }
 
-/** Check if a response is an API error. */
-function isApiError(
-  response: unknown,
-): response is { err_code: number; code: number; description?: string } {
+/** Check if a response is an API error response. */
+function isErrorResponse(response: StreamMessagesResponse): response is {
+  type?: string;
+  error: { code: number; err_code?: number; description?: string };
+} {
   return (
-    typeof response === "object" && response !== null && "err_code" in response
+    typeof response === "object" && response !== null && "error" in response
   );
+}
+
+/** Extract messages array from the API response. */
+function extractMessages(response: StreamMessagesResponse): StreamMessage[] {
+  if (isErrorResponse(response)) {
+    return [];
+  }
+
+  if ("messages" in response && Array.isArray(response.messages)) {
+    return response.messages;
+  }
+
+  if ("message" in response && response.message) {
+    return [response.message];
+  }
+
+  return [];
 }
 
 /** Decode base64 data and parse headers if present. */
 function parseMessage(msg: StreamMessage): MessageItem | null {
-  if (isApiError(msg)) {
-    return null;
-  }
-
   const decodedData = decodeBase64(msg.data);
 
   let headers: Record<string, string> | undefined;
@@ -123,13 +141,8 @@ export default function MessageViewer(props: Props) {
       return response;
     },
     select: (response) => {
-      if (isApiError(response)) {
-        return [];
-      }
-
-      const messages = Array.isArray(response) ? response : [response];
-      return messages
-        .filter((msg): msg is StreamMessage => !isApiError(msg))
+      const msgs = extractMessages(response);
+      return msgs
         .map((msg): MessageItem | null => parseMessage(msg))
         .filter((m): m is MessageItem => m !== null);
     },

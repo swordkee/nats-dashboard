@@ -1,8 +1,8 @@
-import { Show } from "solid-js";
+import { Show, For } from "solid-js";
 
 import type { JszQuery } from "~/components/dashboard/queries";
 import { useStore } from "~/components/context/store";
-import { formatDate } from "~/lib/utils";
+import { formatDate, durationFromNs } from "~/lib/utils";
 import {
   InfoSection,
   DetailList,
@@ -73,6 +73,90 @@ export default function JetStreamInfo(props: Props) {
             value={props.jsz.data?.config?.compress_ok ? "Yes" : "No"}
           />
         </DetailList>
+
+        <Show when={props.jsz.data?.meta_cluster}>
+          <div class="mt-4 pt-4 border-t border-gray-200 dark:border-white/10">
+            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
+              Meta Cluster
+            </h3>
+            <DetailList>
+              <DetailItem
+                name="Cluster Name"
+                value={props.jsz.data?.meta_cluster?.name}
+              />
+              <DetailItem
+                name="Leader"
+                value={props.jsz.data?.meta_cluster?.leader}
+              />
+              <DetailItem
+                name="Peer"
+                value={props.jsz.data?.meta_cluster?.peer}
+              />
+              <DetailItem
+                name="Cluster Size"
+                value={String(props.jsz.data?.meta_cluster?.cluster_size ?? "")}
+              />
+            </DetailList>
+            <Show
+              when={
+                props.jsz.data?.meta_cluster?.replicas &&
+                props.jsz.data!.meta_cluster!.replicas!.length > 0
+              }
+            >
+              <div class="mt-3 overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                  <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                        Name
+                      </th>
+                      <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                        Current
+                      </th>
+                      <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                        Offline
+                      </th>
+                      <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                        Active
+                      </th>
+                      <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                        Lag
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
+                    <For each={props.jsz.data?.meta_cluster?.replicas ?? []}>
+                      {(replica) => (
+                        <tr>
+                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                            {replica.name}
+                          </td>
+                          <td class="px-3 py-2 whitespace-nowrap">
+                            <Indicator
+                              color={replica.current ? "green" : "red"}
+                              title={
+                                replica.current ? "Current" : "Not Current"
+                              }
+                            />
+                          </td>
+                          <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            {replica.offline ? "Yes" : "No"}
+                          </td>
+                          <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            {durationFromNs(replica.active).str}
+                          </td>
+                          <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            {replica.lag ?? 0}
+                          </td>
+                        </tr>
+                      )}
+                    </For>
+                  </tbody>
+                </table>
+              </div>
+            </Show>
+          </div>
+        </Show>
 
         <JetStreamSettings class="mt-6" />
       </div>

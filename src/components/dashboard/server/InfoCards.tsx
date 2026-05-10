@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import { Show, For } from "solid-js";
 
 import type { VarzQuery } from "~/components/dashboard/queries";
 import {
@@ -110,6 +110,20 @@ export default function InfoCards(props: Props) {
                   : "No",
               }}
             />
+
+            <Show when={props.varz.data?.jetstream?.meta}>
+              <DataCard
+                title="Meta Cluster"
+                data={{
+                  "Cluster Name": props.varz.data?.jetstream?.meta?.name,
+                  Leader: props.varz.data?.jetstream?.meta?.leader,
+                  Peer: props.varz.data?.jetstream?.meta?.peer,
+                  "Cluster Size":
+                    props.varz.data?.jetstream?.meta?.cluster_size,
+                  Replicas: props.varz.data?.jetstream?.meta?.replicas?.length,
+                }}
+              />
+            </Show>
           </div>
         </Show>
 
@@ -258,6 +272,81 @@ export default function InfoCards(props: Props) {
             title="HTTP Request Stats"
             data={abbreviateObjectValues(props.varz.data?.http_req_stats) ?? {}}
           />
+
+          <Show when={props.varz.data?.ocsp_peer_cache}>
+            <DataCard
+              title="OCSP Peer Cache"
+              data={{
+                "Cache Type": props.varz.data?.ocsp_peer_cache?.cache_type,
+                "Cache Hits": abbreviateNum(
+                  props.varz.data?.ocsp_peer_cache?.cache_hits ?? 0,
+                ).str,
+                "Cache Misses": abbreviateNum(
+                  props.varz.data?.ocsp_peer_cache?.cache_misses ?? 0,
+                ).str,
+                "Cached Responses": abbreviateNum(
+                  props.varz.data?.ocsp_peer_cache?.cached_responses ?? 0,
+                ).str,
+                "Revoked Responses": abbreviateNum(
+                  props.varz.data?.ocsp_peer_cache?.cached_revoked_responses ??
+                    0,
+                ).str,
+                "Good Responses": abbreviateNum(
+                  props.varz.data?.ocsp_peer_cache?.cached_good_responses ?? 0,
+                ).str,
+                "Unknown Responses": abbreviateNum(
+                  props.varz.data?.ocsp_peer_cache?.cached_unknown_responses ??
+                    0,
+                ).str,
+              }}
+            />
+          </Show>
+
+          <Show
+            when={
+              props.varz.data?.trusted_operators_jwt &&
+              props.varz.data!.trusted_operators_jwt!.length > 0
+            }
+          >
+            <DataCard
+              title="Trusted Operators"
+              data={Object.fromEntries(
+                props.varz.data!.trusted_operators_jwt!.map((jwt, i) => [
+                  `Operator ${i + 1}`,
+                  jwt.length > 40 ? `${jwt.slice(0, 40)}...` : jwt,
+                ]),
+              )}
+            />
+          </Show>
+
+          <Show
+            when={
+              props.varz.data?.trusted_operators_claim &&
+              props.varz.data!.trusted_operators_claim!.length > 0
+            }
+          >
+            <For each={props.varz.data!.trusted_operators_claim!}>
+              {(claim, i) => (
+                <DataCard
+                  title={`Operator ${i() + 1} Claims`}
+                  data={{
+                    Name: claim.name,
+                    Issuer: claim.iss,
+                    Subject: claim.sub,
+                    "System Account": claim.nats?.system_account,
+                    "Account Server URL": claim.nats?.account_server_url,
+                    "Assert Server Version": claim.nats?.assert_server_version,
+                    "Strict Signing Key Usage":
+                      claim.nats?.strict_signing_key_usage !== undefined
+                        ? claim.nats?.strict_signing_key_usage
+                          ? "Yes"
+                          : "No"
+                        : undefined,
+                  }}
+                />
+              )}
+            </For>
+          </Show>
         </div>
       </div>
     </div>

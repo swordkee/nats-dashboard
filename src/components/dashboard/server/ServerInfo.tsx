@@ -1,6 +1,6 @@
 import { mergeProps, Show } from "solid-js";
 
-import type { VarzQuery } from "~/components/dashboard/queries";
+import type { VarzQuery, HealthzQuery } from "~/components/dashboard/queries";
 import { useStore } from "~/components/context/store";
 import { formatDate } from "~/lib/utils";
 import Indicator from "~/components/Indicator";
@@ -13,6 +13,7 @@ import {
 
 interface Props {
   varz: VarzQuery;
+  healthz?: HealthzQuery;
   details?: boolean;
 }
 
@@ -20,6 +21,30 @@ export default function ServerInfo(props: Props) {
   props = mergeProps({ details: false } satisfies Partial<Props>, props);
 
   const [store] = useStore();
+
+  const healthStatus = (): string | undefined => {
+    const data = props.healthz?.data;
+    if (!data) return undefined;
+    if (data.status === "ok") return "ok";
+    if (data.status === "error") {
+      const error = "error" in data ? data.error : "";
+      return error ? `error: ${error}` : "error";
+    }
+    if (data.status === "unavailable") {
+      const error = "error" in data ? data.error : "";
+      return error ? `unavailable: ${error}` : "unavailable";
+    }
+    return undefined;
+  };
+
+  const healthColor = (): "green" | "red" | "yellow" | undefined => {
+    const data = props.healthz?.data;
+    if (!data) return undefined;
+    if (data.status === "ok") return "green";
+    if (data.status === "error") return "red";
+    if (data.status === "unavailable") return "yellow";
+    return undefined;
+  };
 
   return (
     <InfoSection>
@@ -49,6 +74,15 @@ export default function ServerInfo(props: Props) {
               </span>
             </Show>
           </h1>
+
+          <Show when={healthColor()}>
+            {(color) => (
+              <Indicator
+                color={color()}
+                title={`Health: ${healthStatus() ?? ""}`}
+              />
+            )}
+          </Show>
         </div>
 
         <DetailList>
@@ -63,6 +97,10 @@ export default function ServerInfo(props: Props) {
           </Show>
 
           <DetailItem name="Uptime" value={props.varz.data?.info.uptime} />
+
+          <Show when={healthStatus()}>
+            <DetailItem name="Health" value={healthStatus()} />
+          </Show>
 
           <Show when={props.details}>
             <ServerDetails varz={props.varz} />

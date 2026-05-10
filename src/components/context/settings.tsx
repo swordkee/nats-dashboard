@@ -1,8 +1,9 @@
-import { createContext, useContext, type ParentProps } from 'solid-js';
+import { createContext, useContext, type ParentProps } from "solid-js";
 
-import type { ConnState, ConnzSortOpt, SubsOption } from '~/types';
-import { createLocalStore } from '~/lib/localstate';
-import { closedConnSortOpts } from '~/components/dashboard/connections/options';
+import type { ConnState, ConnzSortOpt, SubsOption } from "~/types";
+import { createLocalStore } from "~/lib/localstate";
+import { closedConnSortOpts } from "~/components/dashboard/connections/options";
+import type { StreamSortField } from "~/components/dashboard/jetstream/options";
 
 interface SettingsState {
   /** Polling interval in milliseconds.. */
@@ -45,6 +46,8 @@ interface JszSettings {
   };
   /** Number of streams to display on each page. */
   pageSize: number;
+  /** Stream list sort field. */
+  streamSortField: StreamSortField;
 }
 
 interface SettingsActions {
@@ -68,6 +71,7 @@ interface SettingsActions {
   setJszConsumers(consumers: boolean): void;
   setJszConfig(config: boolean): void;
   setJszStreamsPageSize(size: number): void;
+  setJszStreamSortField(field: StreamSortField): void;
 }
 
 const defaultSettings: SettingsState = {
@@ -75,8 +79,8 @@ const defaultSettings: SettingsState = {
   jsonp: false,
   connz: {
     query: {
-      state: 'open',
-      sort: 'cid',
+      state: "open",
+      sort: "cid",
       limit: 50,
       subs: false,
       auth: false,
@@ -90,6 +94,7 @@ const defaultSettings: SettingsState = {
       config: false,
     },
     pageSize: 10,
+    streamSortField: "created",
   },
 };
 
@@ -107,6 +112,7 @@ const defaultActions: SettingsActions = {
   setJszConsumers() {},
   setJszConfig() {},
   setJszStreamsPageSize() {},
+  setJszStreamSortField() {},
 };
 
 export type SettingsStore = [state: SettingsState, actions: SettingsActions];
@@ -122,64 +128,67 @@ interface Props {
 
 export function SettingsProvider(props: ParentProps<Props>) {
   const [settings, setState] = createLocalStore<SettingsState>(
-    'settings',
-    props.initialState ?? defaultSettings
+    "settings",
+    props.initialState ?? defaultSettings,
   );
 
   const actions: SettingsActions = {
     setInterval(interval) {
-      setState('interval', interval);
+      setState("interval", interval);
     },
     setJSONP(jsonp) {
-      setState('jsonp', jsonp);
+      setState("jsonp", jsonp);
     },
     setConnz(settings) {
-      setState('connz', settings);
+      setState("connz", settings);
     },
     setConnzState(state) {
-      setState('connz', 'query', (prev) => {
+      setState("connz", "query", (prev) => {
         // Reset the sort option if invalid for the new connections state.
         const sort =
-          state !== 'closed' && closedConnSortOpts.includes(prev.sort)
-            ? 'cid'
+          state !== "closed" && closedConnSortOpts.includes(prev.sort)
+            ? "cid"
             : prev.sort;
 
         return { state, sort };
       });
     },
     setConnzSort(sort) {
-      setState('connz', 'query', { sort });
+      setState("connz", "query", { sort });
     },
     setConnzLimit(limit) {
-      setState('connz', 'query', { limit });
+      setState("connz", "query", { limit });
     },
     setConnzSubs(subs) {
-      setState('connz', 'query', { subs });
+      setState("connz", "query", { subs });
     },
     setConnzAuth(auth) {
-      setState('connz', 'query', { auth });
+      setState("connz", "query", { auth });
     },
     setJszAccounts(accounts) {
-      setState('jsz', 'query', { accounts });
+      setState("jsz", "query", { accounts });
     },
     setJszStreams(streams) {
-      setState('jsz', 'query', (prev) => {
+      setState("jsz", "query", (prev) => {
         const accounts = streams || prev.accounts;
         return { accounts, streams };
       });
     },
     setJszConsumers(consumers) {
-      setState('jsz', 'query', (prev) => {
+      setState("jsz", "query", (prev) => {
         const accounts = consumers || prev.accounts;
         const streams = consumers || prev.streams;
         return { accounts, streams, consumers };
       });
     },
     setJszConfig(config) {
-      setState('jsz', 'query', { config });
+      setState("jsz", "query", { config });
     },
     setJszStreamsPageSize(pageSize) {
-      setState('jsz', { pageSize });
+      setState("jsz", { pageSize });
+    },
+    setJszStreamSortField(streamSortField) {
+      setState("jsz", { streamSortField });
     },
   };
 

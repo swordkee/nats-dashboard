@@ -1,18 +1,37 @@
-import { Switch, Match } from 'solid-js';
+import { Switch, Match, createEffect } from "solid-js";
 
-import { useStore } from '~/components/context/store';
-import { useVarz } from '~/components/dashboard/queries';
-import GetStarted from '~/components/dashboard/GetStarted';
-import { LoadingIcon } from '~/components/icons';
-import Button from '~/components/Button';
+import { useStore } from "~/components/context/store";
+import { useVarz, useHealthz } from "~/components/dashboard/queries";
+import GetStarted from "~/components/dashboard/GetStarted";
+import { LoadingIcon } from "~/components/icons";
+import Button from "~/components/Button";
 
-import ServerInfo from '~/components/dashboard/server/ServerInfo';
-import ServerStats from '~/components/dashboard/server/ServerStats';
-import Connections from '~/components/dashboard/pages/Connections';
+import ServerInfo from "~/components/dashboard/server/ServerInfo";
+import ServerStats from "~/components/dashboard/server/ServerStats";
+import Connections from "~/components/dashboard/pages/Connections";
+import { createOverviewTrends } from "~/lib/trends";
 
 export default function Overview() {
   const [store, actions] = useStore();
   const varz = useVarz();
+  const healthz = useHealthz();
+
+  const { trends, push } = createOverviewTrends();
+
+  // Push trend data on each successful varz update
+  createEffect(() => {
+    if (varz.data) {
+      push.pushCpu(varz.data.cpu);
+      push.pushMemory(varz.data.mem);
+      push.pushConnections(varz.data.connections);
+      push.pushInMsgsRate(varz.data.info.inMsgsRate.num);
+      push.pushOutMsgsRate(varz.data.info.outMsgsRate.num);
+      push.pushInBytesRate(varz.data.info.inBytesRate.bytes);
+      push.pushOutBytesRate(varz.data.info.outBytesRate.bytes);
+      push.pushSubscriptions(varz.data.subscriptions);
+      push.pushSlowConsumers(varz.data.slow_consumers);
+    }
+  });
 
   return (
     <div>
@@ -28,8 +47,8 @@ export default function Overview() {
         </Match>
 
         <Match when={varz.isSuccess}>
-          <ServerInfo varz={varz} />
-          <ServerStats varz={varz} />
+          <ServerInfo varz={varz} healthz={healthz} />
+          <ServerStats varz={varz} trends={trends} />
         </Match>
 
         <Match when={varz.isError}>

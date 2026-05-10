@@ -65,19 +65,17 @@ interface Props {
 export default function StreamsList(props: Props) {
   const [settings, actions] = useSettings();
 
-  const [sortField, setSortField] = createSignal<StreamSortField>("created");
-
   const streams = createMemo(() =>
     (props.streams ?? [])
       .map(formatStream)
-      .sort(getSortComparator(sortField())),
+      .sort(getSortComparator(settings.jsz.streamSortField)),
   );
 
   const [currentPage, setCurrentPage] = createSignal(1);
 
   // Reset page when sort changes
   const setSort = (field: StreamSortField) => {
-    setSortField(field);
+    actions.setJszStreamSortField(field);
     setCurrentPage(1);
   };
 
@@ -170,7 +168,7 @@ export default function StreamsList(props: Props) {
               class="hidden xl:block"
               width="40"
               options={streamSortOptions}
-              active={sortField()}
+              active={settings.jsz.streamSortField}
               onChange={setSort}
             >
               <HeaderButton class="flex items-center gap-x-1">

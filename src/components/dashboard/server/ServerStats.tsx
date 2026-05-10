@@ -1,10 +1,23 @@
-import { mergeProps, Show } from 'solid-js';
+import { mergeProps, Show, type Accessor } from "solid-js";
 
-import type { VarzQuery } from '~/components/dashboard/queries';
-import { Stats, StatCell } from '~/components/dashboard/Stats';
+import type { VarzQuery } from "~/components/dashboard/queries";
+import { Stats, StatCell } from "~/components/dashboard/Stats";
+
+interface TrendData {
+  cpu: Accessor<number[]>;
+  memory: Accessor<number[]>;
+  connections: Accessor<number[]>;
+  inMsgsRate: Accessor<number[]>;
+  outMsgsRate: Accessor<number[]>;
+  inBytesRate: Accessor<number[]>;
+  outBytesRate: Accessor<number[]>;
+  subscriptions: Accessor<number[]>;
+  slowConsumers: Accessor<number[]>;
+}
 
 interface Props {
   varz: VarzQuery;
+  trends?: TrendData;
   details?: boolean;
 }
 
@@ -14,16 +27,23 @@ export default function ServerStats(props: Props) {
   return (
     <Stats>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px">
-        <StatCell title="CPU Load" stat={props.varz.data?.cpu} unit="%" />
+        <StatCell
+          title="CPU Load"
+          stat={props.varz.data?.cpu}
+          unit="%"
+          sparkline={props.trends?.cpu}
+        />
         <StatCell
           title="Memory Usage"
           stat={props.varz.data?.info.memory.value}
           unit={props.varz.data?.info.memory.unit}
+          sparkline={props.trends?.memory}
         />
         <StatCell
           title="Connections"
           stat={props.varz.data?.info.conns.value}
           unit={props.varz.data?.info.conns.unit}
+          sparkline={props.trends?.connections}
         />
         <StatCell
           title="Total Connections"
@@ -34,11 +54,13 @@ export default function ServerStats(props: Props) {
           title="Subscriptions"
           stat={props.varz.data?.info.subs.value}
           unit={props.varz.data?.info.subs.unit}
+          sparkline={props.trends?.subscriptions}
         />
         <StatCell
           title="Slow Consumers"
           stat={props.varz.data?.info.slowCons.value}
           unit={props.varz.data?.info.slowCons.unit}
+          sparkline={props.trends?.slowConsumers}
         />
       </div>
 
@@ -67,21 +89,25 @@ export default function ServerStats(props: Props) {
           title="Messages Received Rate"
           stat={props.varz.data?.info.inMsgsRate.value}
           unit={`${props.varz.data?.info.inMsgsRate.unit}/s`}
+          sparkline={props.trends?.inMsgsRate}
         />
         <StatCell
           title="Messages Sent Rate"
           stat={props.varz.data?.info.outMsgsRate.value}
           unit={`${props.varz.data?.info.outMsgsRate.unit}/s`}
+          sparkline={props.trends?.outMsgsRate}
         />
         <StatCell
           title="Data Received Rate"
           stat={props.varz.data?.info.inBytesRate.value}
           unit={`${props.varz.data?.info.inBytesRate.unit}/s`}
+          sparkline={props.trends?.inBytesRate}
         />
         <StatCell
           title="Data Sent Rate"
           stat={props.varz.data?.info.outBytesRate.value}
           unit={`${props.varz.data?.info.outBytesRate.unit}/s`}
+          sparkline={props.trends?.outBytesRate}
         />
       </div>
 

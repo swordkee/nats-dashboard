@@ -19,3 +19,11 @@
 - [x] Gateways page — Outbound/inbound gateway status and account info
 - [x] Leaf nodes page — Leaf node list with detail slide-over
 - [x] Subscriptions page — Subscription list with sublist stats overview
+- [x] Health Check — `useHealthz` hook + health indicator on Overview page (green/red/yellow)
+- [x] Meta Cluster — Info page + JetStream page display meta_cluster topology with replica table
+- [x] Replica Details — Stream/Consumer detail views show per-replica health (current/offline/active/lag)
+- [x] Sparkline Trends — SVG sparkline charts on Overview page for CPU, memory, connections, rates, etc.
+- [x] OCSP Peer Cache — Info page shows OCSP response cache stats
+- [x] Trusted Operators — Info page shows operator JWTs and claims
+- [x] Stream sort persistence — Sort field stored in localStorage via SettingsProvider
+- [x] Fix MessageViewer/KVStoreBrowser — API response now correctly handles `{ messages: [...] }` wrapper

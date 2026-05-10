@@ -52,8 +52,10 @@ NATS Web Dashboard — a static web app (PWA) that displays live NATS server mon
 
 ### Type Safety
 - NATS API types live in `src/types/` and are re-exported from `src/types/index.ts`
-- Use `isApiError()` type guard (not `'err_code' in obj`) when handling `StreamMessagesResponse`
+- `StreamMessagesResponse` is a union of `StreamMessagesListResponse` (has `messages` array), `StreamMessageGetResponse` (has `message` object), and `StreamMessageErrorResponse` (has `error`). Use `extractMessages()` helper to get messages array from response
+- The NATS messages API returns `{ messages: [...] }` wrapper, NOT a bare array
 - With `exactOptionalPropertyTypes: true` in tsconfig, use spread `...(val !== undefined && { key: val })` for optional fields instead of direct assignment
+- Optional props in interfaces that can be `undefined` must include `| undefined` in the type: `sparkline?: Accessor<number[]> | undefined`
 
 ### Adding a New Page
 1. Create page component in `src/components/dashboard/pages/`

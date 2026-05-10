@@ -10,7 +10,9 @@ import type {
   AccountzOptions,
   AccountStatzOptions,
   SubszOptions,
+  HealthzOptions,
 } from "~/types";
+import type { Healthz } from "~/types";
 import { fetchInfo } from "~/lib/info";
 import { getPrevQueryResponse, newestQueryData } from "~/lib/query-utils";
 import {
@@ -370,3 +372,33 @@ export function useSubsz(options?: () => SubszOptions) {
 }
 
 export type SubszQuery = ReturnType<typeof useSubsz>;
+
+/** Start polling for server health. */
+export function useHealthz(options?: () => HealthzOptions) {
+  const [store] = useStore();
+  const [settings] = useSettings();
+
+  const optsMemo = createMemo(() => options?.());
+
+  return createQuery<Healthz>(() => ({
+    queryKey: [store.server.url, "healthz", optsMemo()],
+    queryFn: async ({ signal }) => {
+      return fetchInfo({
+        url: store.server.url,
+        endpoint: "healthz",
+        args: optsMemo(),
+        jsonp: settings.jsonp,
+        signal,
+      });
+    },
+    enabled: store.active,
+    refetchInterval: settings.interval,
+    reconcile: false,
+    meta: {
+      errorTitle: "Health Check",
+      errorMessage: "Cannot fetch the server health status.",
+    },
+  }));
+}
+
+export type HealthzQuery = ReturnType<typeof useHealthz>;

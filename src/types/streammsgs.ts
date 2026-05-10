@@ -45,5 +45,32 @@ export interface ApiError {
   description?: string;
 }
 
-/** Stream messages API response (can be a single message, an array, or an error). */
-export type StreamMessagesResponse = StreamMessage | StreamMessage[] | ApiError;
+/** Response wrapper for multiple messages. */
+export interface StreamMessagesListResponse {
+  /** Type of the response. */
+  type?: string;
+  /** List of messages. */
+  messages?: StreamMessage[];
+}
+
+/** Response wrapper for a single message. */
+export interface StreamMessageGetResponse {
+  /** Type of the response. */
+  type?: string;
+  /** The message. */
+  message?: StreamMessage;
+}
+
+/** Response wrapper for an error. */
+export interface StreamMessageErrorResponse {
+  /** Type of the response. */
+  type?: string;
+  /** Error details. */
+  error?: ApiError;
+}
+
+/** Stream messages API response (can be a list, a single message, or an error). */
+export type StreamMessagesResponse =
+  | StreamMessagesListResponse
+  | StreamMessageGetResponse
+  | StreamMessageErrorResponse;
