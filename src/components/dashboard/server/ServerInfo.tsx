@@ -1,15 +1,15 @@
-import { mergeProps, Show } from 'solid-js';
+import { mergeProps, Show } from "solid-js";
 
-import type { VarzQuery } from '~/components/dashboard/queries';
-import { useStore } from '~/components/context/store';
-import { formatDate } from '~/lib/utils';
-import Indicator from '~/components/Indicator';
+import type { VarzQuery } from "~/components/dashboard/queries";
+import { useStore } from "~/components/context/store";
+import { formatDate } from "~/lib/utils";
+import Indicator from "~/components/Indicator";
 import {
   InfoSection,
   DetailList,
   DetailItem,
   InfoBadge,
-} from '~/components/dashboard/InfoSection';
+} from "~/components/dashboard/InfoSection";
 
 interface Props {
   varz: VarzQuery;
@@ -26,8 +26,8 @@ export default function ServerInfo(props: Props) {
       <div>
         <div class="flex items-center gap-x-3">
           <Indicator
-            color={store.active ? 'green' : 'gray'}
-            title={store.active ? 'Monitoring' : 'Not Monitoring'}
+            color={store.active ? "green" : "gray"}
+            title={store.active ? "Monitoring" : "Not Monitoring"}
           />
 
           <h1 class="flex gap-x-3 text-base leading-7">
@@ -80,19 +80,17 @@ function ServerDetails(props: { varz: VarzQuery }) {
     <>
       <DetailItem
         name="Server Time"
-        value={props.varz.data?.now && formatDate(props.varz.data?.now, 'UTC')}
+        value={props.varz.data?.now && formatDate(props.varz.data?.now)}
       />
       <DetailItem
         name="Start Time"
-        value={
-          props.varz.data?.start && formatDate(props.varz.data?.start, 'UTC')
-        }
+        value={props.varz.data?.start && formatDate(props.varz.data?.start)}
       />
       <DetailItem
         name="Config Load Time"
         value={
           props.varz.data?.config_load_time &&
-          formatDate(props.varz.data?.config_load_time, 'UTC')
+          formatDate(props.varz.data?.config_load_time)
         }
       />
     </>

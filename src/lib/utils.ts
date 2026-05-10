@@ -2,7 +2,7 @@ import {
   differenceInMilliseconds,
   differenceInSeconds,
   formatDistanceToNowStrict,
-} from 'date-fns';
+} from "date-fns";
 
 export interface Duration {
   /** Number of milliseconds for this duration. */
@@ -42,35 +42,35 @@ export function durationFromMs(milliseconds: number): Duration {
   const parts: { value: number; unit: string }[] = [];
 
   if (y > 0) {
-    parts.push({ value: y, unit: 'y' });
+    parts.push({ value: y, unit: "y" });
   }
 
   if (d > 0) {
-    parts.push({ value: d, unit: 'd' });
+    parts.push({ value: d, unit: "d" });
   }
 
   if (h > 0) {
-    parts.push({ value: h, unit: 'h' });
+    parts.push({ value: h, unit: "h" });
   }
 
   if (m > 0) {
-    parts.push({ value: m, unit: 'm' });
+    parts.push({ value: m, unit: "m" });
   }
 
   if (s > 0) {
-    parts.push({ value: s, unit: 's' });
+    parts.push({ value: s, unit: "s" });
   }
 
   if (ms > 0) {
-    parts.push({ value: ms, unit: 'ms' });
+    parts.push({ value: ms, unit: "ms" });
   }
 
   const isComposite = parts.length > 1;
-  const str = parts.map(({ value, unit }) => `${value}${unit}`).join(' ');
+  const str = parts.map(({ value, unit }) => `${value}${unit}`).join(" ");
 
   return {
     ms: milliseconds,
-    value: isComposite ? str : parts[0]?.value.toString() ?? '',
+    value: isComposite ? str : parts[0]?.value.toString() ?? "",
     unit: isComposite ? undefined : parts[0]?.unit,
     str,
   };
@@ -96,12 +96,12 @@ export interface FormattedBytes {
 
 /** Format bytes to a human readable number with a unit. */
 export function formatBytes(bytes: number): FormattedBytes {
-  const units = 'KMGTPE';
+  const units = "KMGTPE";
   const factor = 1024;
 
   if (bytes < factor) {
-    const value = bytes.toFixed(2).replace(/\.0+$/, '');
-    const unit = 'B';
+    const value = bytes.toFixed(2).replace(/\.0+$/, "");
+    const unit = "B";
     const str = `${value} ${unit}`;
 
     return { bytes, value, unit, str };
@@ -115,9 +115,9 @@ export function formatBytes(bytes: number): FormattedBytes {
     exp++;
   }
 
-  const value = (bytes / div).toFixed(2).replace(/\.0+$/, '');
+  const value = (bytes / div).toFixed(2).replace(/\.0+$/, "");
   const unit = `${units[exp]}iB`;
-  const str = [value, unit].join(' ');
+  const str = [value, unit].join(" ");
 
   return { bytes, value, unit, str };
 }
@@ -139,7 +139,7 @@ export interface AbbreviatedNumber {
  * The `unit` will be an empty string for non abbreviated numbers.
  */
 export function abbreviateNum(num: number): AbbreviatedNumber {
-  const suffixes = ['', 'K', 'M', 'B', 'T'];
+  const suffixes = ["", "K", "M", "B", "T"];
   let suffixNum = 0;
 
   while (num >= 1000) {
@@ -147,9 +147,9 @@ export function abbreviateNum(num: number): AbbreviatedNumber {
     suffixNum++;
   }
 
-  const value = num.toFixed(2).replace(/\.0+$/, '');
+  const value = num.toFixed(2).replace(/\.0+$/, "");
   const unit = suffixes[suffixNum];
-  const str = [value, unit].join(' ');
+  const str = [value, unit].join(" ");
 
   return { num, value, unit, str };
 }
@@ -160,7 +160,7 @@ export function abbreviateNum(num: number): AbbreviatedNumber {
  * Returns a new object.
  */
 export function abbreviateObjectValues(
-  obj: Record<string, number> | undefined
+  obj: Record<string, number> | undefined,
 ): Record<string, string> | undefined {
   if (!obj) return obj;
 
@@ -181,7 +181,7 @@ export function abbreviateObjectValues(
  */
 export function formatDuration(duration: string): string {
   const parts = duration.match(/[\d.]+(\D+)?/g);
-  return parts ? parts.join(' ') : '';
+  return parts ? parts.join(" ") : "";
 }
 
 /**
@@ -190,11 +190,11 @@ export function formatDuration(duration: string): string {
  * For example `7.075186ms` becomes `7.08ms`.
  */
 export function roundDuration(duration: string) {
-  if (!duration.includes('.')) return duration;
+  if (!duration.includes(".")) return duration;
 
   let value = parseFloat(duration).toFixed(2);
 
-  if (value.endsWith('.00')) {
+  if (value.endsWith(".00")) {
     value = value.slice(0, -3);
   }
 
@@ -215,13 +215,13 @@ export function roundDuration(duration: string) {
  */
 export function formatRTT(rtt: string): string {
   const formatted = [];
-  const parts = formatDuration(rtt).split(' ');
+  const parts = formatDuration(rtt).split(" ");
 
   for (const p of parts) {
     formatted.push(roundDuration(p));
   }
 
-  return formatted.join(' ');
+  return formatted.join(" ");
 }
 
 /** Get the time difference in milliseconds between a start and an end date-time strings. */
@@ -242,7 +242,7 @@ export function addQueryParams(url: URL, params: Record<string, string>): URL {
 /** Return the difference in seconds from the date until now. */
 export function diffInSecondsToNow(date: string): number {
   return differenceInSeconds(new Date(), new Date(date), {
-    roundingMethod: 'round',
+    roundingMethod: "round",
   });
 }
 
@@ -308,25 +308,25 @@ export function calculateRates({
   const inMsgsDelta = (current?.in_msgs ?? 0) - (previous?.in_msgs ?? 0);
 
   const inMsgsRate = abbreviateNum(
-    timeDeltaSec > 0 ? Math.max(inMsgsDelta, 0) / timeDeltaSec : 0
+    timeDeltaSec > 0 ? Math.max(inMsgsDelta, 0) / timeDeltaSec : 0,
   );
 
   const outMsgsDelta = (current?.out_msgs ?? 0) - (previous?.out_msgs ?? 0);
 
   const outMsgsRate = abbreviateNum(
-    timeDeltaSec > 0 ? Math.max(outMsgsDelta, 0) / timeDeltaSec : 0
+    timeDeltaSec > 0 ? Math.max(outMsgsDelta, 0) / timeDeltaSec : 0,
   );
 
   const inBytesDelta = (current?.in_bytes ?? 0) - (previous?.in_bytes ?? 0);
 
   const inBytesRate = formatBytes(
-    timeDeltaSec > 0 ? Math.max(inBytesDelta, 0) / timeDeltaSec : 0
+    timeDeltaSec > 0 ? Math.max(inBytesDelta, 0) / timeDeltaSec : 0,
   );
 
   const outBytesDelta = (current?.out_bytes ?? 0) - (previous?.out_bytes ?? 0);
 
   const outBytesRate = formatBytes(
-    timeDeltaSec > 0 ? Math.max(outBytesDelta, 0) / timeDeltaSec : 0
+    timeDeltaSec > 0 ? Math.max(outBytesDelta, 0) / timeDeltaSec : 0,
   );
 
   return {
@@ -344,7 +344,7 @@ export function formatDistance(datetime: string): string {
 
   // For < 1s display "now" instead of "0 seconds ago".
   if (differenceInMilliseconds(new Date(), date) < 1000) {
-    return 'now';
+    return "now";
   }
 
   return formatDistanceToNowStrict(date, {
@@ -354,8 +354,14 @@ export function formatDistance(datetime: string): string {
 
 /**
  * Format a date-time string.
+ *
+ * All NATS server monitoring endpoints return UTC timestamps,
+ * so we format in UTC by default for consistency.
  */
-export function formatDate(dateString: string, timeZone?: string): string {
+export function formatDate(
+  dateString: string,
+  timeZone: string = "UTC",
+): string {
   return new Date(dateString).toLocaleString(undefined, {
     hour12: false,
     timeZone,
@@ -366,7 +372,7 @@ export function formatDate(dateString: string, timeZone?: string): string {
  * Remove the extension from a path string.
  */
 export function removeExt(path: string): string {
-  return path.replace(/\.[^/.]+$/, '');
+  return path.replace(/\.[^/.]+$/, "");
 }
 
 /**
@@ -382,9 +388,9 @@ export function decodeBase64(base64: string): string {
       bytes[i] = binaryString.charCodeAt(i);
     }
     // Decode bytes to UTF-8 string
-    return new TextDecoder('utf-8').decode(bytes);
+    return new TextDecoder("utf-8").decode(bytes);
   } catch (error) {
-    console.error('Failed to decode base64:', error);
+    console.error("Failed to decode base64:", error);
     return base64;
   }
 }

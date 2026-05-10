@@ -1,4 +1,4 @@
-import { A, useLocation, type AnchorProps } from '@solidjs/router';
+import { A, useLocation, type AnchorProps } from "@solidjs/router";
 
 export default function Navigation() {
   const location = useLocation();
@@ -13,16 +13,34 @@ export default function Navigation() {
         class="flex min-w-full flex-none gap-x-6 px-4 text-sm font-semibold leading-6 text-gray-500 dark:text-gray-400 sm:px-6 lg:px-8"
       >
         <li>
-          <Link href={path('/')}>Overview</Link>
+          <Link href={path("/")}>Overview</Link>
         </li>
         <li>
-          <Link href={path('/info')}>Info</Link>
+          <Link href={path("/info")}>Info</Link>
         </li>
         <li>
-          <Link href={path('/connections')}>Connections</Link>
+          <Link href={path("/connections")}>Connections</Link>
         </li>
         <li>
-          <Link href={path('/jetstream')}>JetStream</Link>
+          <Link href={path("/routes")}>Routes</Link>
+        </li>
+        <li>
+          <Link href={path("/gateways")}>Gateways</Link>
+        </li>
+        <li>
+          <Link href={path("/leafnodes")}>Leaf Nodes</Link>
+        </li>
+        <li>
+          <Link href={path("/jetstream")}>JetStream</Link>
+        </li>
+        <li>
+          <Link href={path("/accounts")}>Accounts</Link>
+        </li>
+        <li>
+          <Link href={path("/accountstats")}>Account Stats</Link>
+        </li>
+        <li>
+          <Link href={path("/subscriptions")}>Subscriptions</Link>
         </li>
       </ul>
     </nav>

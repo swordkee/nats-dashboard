@@ -1,5 +1,11 @@
-import type { Endpoint, EndpointOptions, EndpointResponse, StreamMessagesOptions, StreamMessagesResponse } from '~/types';
-import { jsonp } from '~/lib/jsonp';
+import type {
+  Endpoint,
+  EndpointOptions,
+  EndpointResponse,
+  StreamMessagesOptions,
+  StreamMessagesResponse,
+} from "~/types";
+import { jsonp } from "~/lib/jsonp";
 
 interface FetchInfoOptions<T extends Endpoint> {
   /** NATS monitoring server URL. */
@@ -23,7 +29,7 @@ export function fetchInfo<T extends Endpoint>({
   signal,
 }: FetchInfoOptions<T>): Promise<EndpointResponse[T]> {
   // Default to the http scheme.
-  if (!baseURL.includes('://')) {
+  if (!baseURL.includes("://")) {
     baseURL = `http://${baseURL}`;
   }
 
@@ -54,31 +60,39 @@ interface FetchStreamMessageOptions {
   signal?: AbortSignal;
 }
 
-/** Fetch a message from a stream by sequence number. */
+/** Fetch messages from a stream.
+ *
+ * The NATS monitoring endpoint for stream messages is:
+ * `GET /jsz/assets/<stream_name>/stream/messages[/<seq>]`
+ */
 export function fetchStreamMessage({
   url: baseURL,
+  streamName,
   seq,
   jsonp = false,
   signal,
 }: FetchStreamMessageOptions): Promise<StreamMessagesResponse> {
   // Default to the http scheme.
-  if (!baseURL.includes('://')) {
+  if (!baseURL.includes("://")) {
     baseURL = `http://${baseURL}`;
   }
 
   // Throws TypeError for invalid URLs.
   let url: URL;
-  
-  if (typeof seq === 'number') {
+
+  // Build the correct NATS monitoring API path for stream messages.
+  const basePath = `jsz/assets/${streamName}/stream/messages`;
+
+  if (typeof seq === "number") {
     // Fetch by sequence number
-    url = new URL(`stream/messages/${seq}`, baseURL);
+    url = new URL(`${basePath}/${seq}`, baseURL);
   } else if (seq) {
     // Fetch with options
-    url = new URL('stream/messages', baseURL);
+    url = new URL(basePath, baseURL);
     const params = new URLSearchParams(seq as Record<string, string>);
     url.search = params.toString();
   } else {
-    throw new Error('Either seq or options must be provided');
+    throw new Error("Either seq or options must be provided");
   }
 
   return fetchData<StreamMessagesResponse>(url.href, {
@@ -95,7 +109,7 @@ interface FetchDataOptions {
 /** Fetch the server data using either JSONP requests or the Fetch API. */
 async function fetchData<T>(
   url: string,
-  { jsonp: useJSONP = false, signal = null }: FetchDataOptions
+  { jsonp: useJSONP = false, signal = null }: FetchDataOptions,
 ): Promise<T> {
   // Required for NATS servers prior to v2.9.22.
   if (useJSONP) {

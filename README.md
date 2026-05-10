@@ -16,6 +16,21 @@ There's **no backend** involved, the requests are made directly from the browser
 
 There's **no data retention**, so no historical stats can be displayed, you will only be able to view the live server stats, if you need this feature you should use a Prometheus exporter with Grafana and set an appropriate data retention policy.
 
+### Pages
+
+| Page | Route | Description |
+| ---- | ----- | ----------- |
+| Overview | `/` | Server overview, stats, and connections |
+| Info | `/info` | Detailed server information, cluster, gateway, and WebSocket config |
+| Connections | `/connections` | Client connections with sorting, pagination, and detail view |
+| Routes | `/routes` | Cluster route connections with traffic stats |
+| Gateways | `/gateways` | Gateway configuration, outbound/inbound gateway status |
+| Leaf Nodes | `/leafnodes` | Leaf node connections with traffic and subscription info |
+| JetStream | `/jetstream` | JetStream stats, streams, consumers, KV store, and message viewer |
+| Accounts | `/accounts` | Account list with detail expansion and sublist stats |
+| Account Stats | `/accountstats` | Per-account connection, traffic, and slow consumer statistics |
+| Subscriptions | `/subscriptions` | Subscription routing list with sublist cache stats |
+
 ## Using the App
 
 #### PWA

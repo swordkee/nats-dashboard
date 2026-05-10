@@ -1,13 +1,13 @@
-import { Show } from 'solid-js';
+import { Show } from "solid-js";
 
-import type { VarzQuery } from '~/components/dashboard/queries';
+import type { VarzQuery } from "~/components/dashboard/queries";
 import {
   formatBytes,
   abbreviateNum,
   durationFromNs,
   abbreviateObjectValues,
-} from '~/lib/utils';
-import DataCard from '~/components/DataCard';
+} from "~/lib/utils";
+import DataCard from "~/components/DataCard";
 
 interface Props {
   varz: VarzQuery;
@@ -23,17 +23,17 @@ export default function InfoCards(props: Props) {
             data={{
               Host: props.varz.data?.host,
               Port: props.varz.data?.port,
-              'Protocol Version': props.varz.data?.proto,
+              "Protocol Version": props.varz.data?.proto,
               Version: props.varz.data?.version,
               JetStream: props.varz.data?.info.jsEnabled
-                ? 'Enabled'
-                : 'Disabled',
+                ? "Enabled"
+                : "Disabled",
               Cores: props.varz.data?.cores,
               GOMAXPROCS: props.varz.data?.gomaxprocs,
-              'Auth. Required': props.varz.data?.auth_required ? 'Yes' : 'No',
-              'Go Version': props.varz.data?.go,
-              'Git Commit': props.varz.data?.git_commit,
-              'System Account': props.varz.data?.system_account,
+              "Auth. Required": props.varz.data?.auth_required ? "Yes" : "No",
+              "Go Version": props.varz.data?.go,
+              "Git Commit": props.varz.data?.git_commit,
+              "System Account": props.varz.data?.system_account,
             }}
           />
 
@@ -43,11 +43,11 @@ export default function InfoCards(props: Props) {
               data={{
                 Host: props.varz.data?.leaf?.host,
                 Port: props.varz.data?.leaf?.port,
-                'Auth. Timeout': `${props.varz.data?.leaf?.auth_timeout}s`,
-                'TLS Required': props.varz.data?.leaf?.tls_required
-                  ? 'Yes'
-                  : 'No',
-                'TLS Timeout': `${props.varz.data?.leaf?.tls_timeout}s`,
+                "Auth. Timeout": `${props.varz.data?.leaf?.auth_timeout}s`,
+                "TLS Required": props.varz.data?.leaf?.tls_required
+                  ? "Yes"
+                  : "No",
+                "TLS Timeout": `${props.varz.data?.leaf?.tls_timeout}s`,
               }}
             />
           </Show>
@@ -59,24 +59,24 @@ export default function InfoCards(props: Props) {
               title="JetStream Stats"
               data={{
                 Memory: formatBytes(
-                  props.varz.data?.jetstream?.stats?.memory ?? 0
+                  props.varz.data?.jetstream?.stats?.memory ?? 0,
                 ).str,
-                'Reserved Memory': formatBytes(
-                  props.varz.data?.jetstream?.stats?.reserved_memory ?? 0
+                "Reserved Memory": formatBytes(
+                  props.varz.data?.jetstream?.stats?.reserved_memory ?? 0,
                 ).str,
                 Storage: formatBytes(
-                  props.varz.data?.jetstream?.stats?.storage ?? 0
+                  props.varz.data?.jetstream?.stats?.storage ?? 0,
                 ).str,
-                'Reserved Storage': formatBytes(
-                  props.varz.data?.jetstream?.stats?.reserved_storage ?? 0
+                "Reserved Storage": formatBytes(
+                  props.varz.data?.jetstream?.stats?.reserved_storage ?? 0,
                 ).str,
                 Accounts: props.varz.data?.jetstream?.stats?.accounts,
-                'HA Assets': props.varz.data?.jetstream?.stats?.ha_assets,
-                'API Requests': abbreviateNum(
-                  props.varz.data?.jetstream?.stats?.api.total ?? 0
+                "HA Assets": props.varz.data?.jetstream?.stats?.ha_assets,
+                "API Requests": abbreviateNum(
+                  props.varz.data?.jetstream?.stats?.api.total ?? 0,
                 ).str,
-                'API Errors': abbreviateNum(
-                  props.varz.data?.jetstream?.stats?.api.errors ?? 0
+                "API Errors": abbreviateNum(
+                  props.varz.data?.jetstream?.stats?.api.errors ?? 0,
                 ).str,
               }}
             />
@@ -84,30 +84,30 @@ export default function InfoCards(props: Props) {
             <DataCard
               title="JetStream Config"
               data={{
-                'Max Memory': formatBytes(
-                  props.varz.data?.jetstream?.config?.max_memory ?? 0
+                "Max Memory": formatBytes(
+                  props.varz.data?.jetstream?.config?.max_memory ?? 0,
                 ).str,
-                'Max Storage': formatBytes(
-                  props.varz.data?.jetstream?.config?.max_storage ?? 0
+                "Max Storage": formatBytes(
+                  props.varz.data?.jetstream?.config?.max_storage ?? 0,
                 ).str,
-                'Store Directory':
+                "Store Directory":
                   props.varz.data?.jetstream?.config?.store_dir,
-                'Sync Always':
+                "Sync Always":
                   props.varz.data?.jetstream?.config?.sync_always !== undefined
                     ? props.varz.data?.jetstream?.config?.sync_always
-                      ? 'Yes'
-                      : 'No'
+                      ? "Yes"
+                      : "No"
                     : undefined,
-                'Sync Interval': props.varz.data?.jetstream?.config
+                "Sync Interval": props.varz.data?.jetstream?.config
                   ?.sync_interval
                   ? durationFromNs(
-                      props.varz.data?.jetstream?.config?.sync_interval
+                      props.varz.data?.jetstream?.config?.sync_interval,
                     ).str
                   : undefined,
-                'Compression Allowed': props.varz.data?.jetstream?.config
+                "Compression Allowed": props.varz.data?.jetstream?.config
                   ?.compress_ok
-                  ? 'Yes'
-                  : 'No',
+                  ? "Yes"
+                  : "No",
               }}
             />
           </div>
@@ -115,12 +115,51 @@ export default function InfoCards(props: Props) {
 
         <Show
           when={
+            props.varz.data?.cluster ||
             props.varz.data?.slow_consumer_stats ||
             props.varz.data?.info.wsEnabled ||
             props.varz.data?.info.mqttEnabled
           }
         >
           <div class="flex flex-col gap-8">
+            <Show when={props.varz.data?.cluster}>
+              <DataCard
+                title="Cluster"
+                data={{
+                  "Cluster Name": props.varz.data?.cluster?.name,
+                  Address: props.varz.data?.cluster?.addr,
+                  "Cluster Port": props.varz.data?.cluster?.cluster_port,
+                  "Auth. Timeout":
+                    props.varz.data?.cluster?.auth_timeout !== undefined
+                      ? `${props.varz.data?.cluster?.auth_timeout}s`
+                      : undefined,
+                  "TLS Required": props.varz.data?.cluster?.tls_required
+                    ? "Yes"
+                    : "No",
+                  "TLS Timeout":
+                    props.varz.data?.cluster?.tls_timeout !== undefined
+                      ? `${props.varz.data?.cluster?.tls_timeout}s`
+                      : undefined,
+                }}
+              />
+              <Show
+                when={
+                  props.varz.data?.cluster?.urls &&
+                  props.varz.data!.cluster!.urls!.length > 0
+                }
+              >
+                <DataCard
+                  title="Cluster URLs"
+                  data={Object.fromEntries(
+                    props.varz.data!.cluster!.urls!.map((url, i) => [
+                      `URL ${i + 1}`,
+                      url,
+                    ]),
+                  )}
+                />
+              </Show>
+            </Show>
+
             <Show when={props.varz.data?.slow_consumer_stats}>
               <DataCard
                 title="Slow Consumer Stats"
@@ -142,21 +181,21 @@ export default function InfoCards(props: Props) {
                   TLS:
                     props.varz.data?.websocket?.no_tls !== undefined
                       ? props.varz.data?.websocket?.no_tls
-                        ? 'Disabled'
-                        : 'Enabled'
+                        ? "Disabled"
+                        : "Enabled"
                       : undefined,
-                  'No Auth. User': props.varz.data?.websocket?.no_auth_user,
-                  'Handshake Timeout':
+                  "No Auth. User": props.varz.data?.websocket?.no_auth_user,
+                  "Handshake Timeout":
                     props.varz.data?.websocket?.handshake_timeout !== undefined
                       ? durationFromNs(
-                          props.varz.data?.websocket?.handshake_timeout ?? 0
+                          props.varz.data?.websocket?.handshake_timeout ?? 0,
                         ).str
                       : undefined,
                   Compression:
                     props.varz.data?.websocket?.compression !== undefined
                       ? props.varz.data?.websocket?.compression
-                        ? 'Enabled'
-                        : 'Disabled'
+                        ? "Enabled"
+                        : "Disabled"
                       : undefined,
                 }}
               />
@@ -168,14 +207,37 @@ export default function InfoCards(props: Props) {
                 data={{
                   Host: props.varz.data?.mqtt?.host,
                   Port: props.varz.data?.mqtt?.port,
-                  'No Auth. User': props.varz.data?.mqtt?.no_auth_user,
-                  'TLS Timeout': `${props.varz.data?.mqtt?.tls_timeout}s`,
-                  'ACK Wait': durationFromNs(
-                    props.varz.data?.mqtt?.ack_wait ?? 0
+                  "No Auth. User": props.varz.data?.mqtt?.no_auth_user,
+                  "TLS Timeout": `${props.varz.data?.mqtt?.tls_timeout}s`,
+                  "ACK Wait": durationFromNs(
+                    props.varz.data?.mqtt?.ack_wait ?? 0,
                   ).str,
-                  'Max ACK Pending': formatBytes(
-                    props.varz.data?.mqtt?.max_ack_pending ?? 0
+                  "Max ACK Pending": formatBytes(
+                    props.varz.data?.mqtt?.max_ack_pending ?? 0,
                   ).str,
+                }}
+              />
+            </Show>
+
+            <Show when={props.varz.data?.gateway}>
+              <DataCard
+                title="Gateway"
+                data={{
+                  "Gateway Name": props.varz.data?.gateway?.name,
+                  Host: props.varz.data?.gateway?.host,
+                  Port: props.varz.data?.gateway?.port,
+                  "Auth. Timeout":
+                    props.varz.data?.gateway?.auth_timeout !== undefined
+                      ? `${props.varz.data?.gateway?.auth_timeout}s`
+                      : undefined,
+                  "TLS Required": props.varz.data?.gateway?.tls_required
+                    ? "Yes"
+                    : "No",
+                  Advertise: props.varz.data?.gateway?.advertise,
+                  "Connect Retries": props.varz.data?.gateway?.connect_retries,
+                  "Reject Unknown": props.varz.data?.gateway?.reject_unknown
+                    ? "Yes"
+                    : "No",
                 }}
               />
             </Show>
@@ -187,9 +249,9 @@ export default function InfoCards(props: Props) {
             title="Monitoring Server"
             data={{
               Host: props.varz.data?.http_host,
-              'HTTP Port': props.varz.data?.http_port,
-              'HTTPS Port': props.varz.data?.https_port,
-              'Base Path': props.varz.data?.http_base_path || '/',
+              "HTTP Port": props.varz.data?.http_port,
+              "HTTPS Port": props.varz.data?.https_port,
+              "Base Path": props.varz.data?.http_base_path || "/",
             }}
           />
           <DataCard

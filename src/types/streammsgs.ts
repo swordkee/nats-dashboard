@@ -45,5 +45,5 @@ export interface ApiError {
   description?: string;
 }
 
-/** Stream messages API response. */
-export type StreamMessagesResponse = StreamMessage | ApiError;
+/** Stream messages API response (can be a single message, an array, or an error). */
+export type StreamMessagesResponse = StreamMessage | StreamMessage[] | ApiError;

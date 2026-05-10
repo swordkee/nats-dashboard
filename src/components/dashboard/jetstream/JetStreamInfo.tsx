@@ -1,18 +1,18 @@
-import { Show } from 'solid-js';
+import { Show } from "solid-js";
 
-import type { JszQuery } from '~/components/dashboard/queries';
-import { useStore } from '~/components/context/store';
-import { formatDate } from '~/lib/utils';
+import type { JszQuery } from "~/components/dashboard/queries";
+import { useStore } from "~/components/context/store";
+import { formatDate } from "~/lib/utils";
 import {
   InfoSection,
   DetailList,
   DetailItem,
-} from '~/components/dashboard/InfoSection';
-import Indicator from '~/components/Indicator';
-import Badge from '~/components/Badge';
-import { LoadingIcon } from '~/components/icons';
+} from "~/components/dashboard/InfoSection";
+import Indicator from "~/components/Indicator";
+import Badge from "~/components/Badge";
+import { LoadingIcon } from "~/components/icons";
 
-import JetStreamSettings from './JetStreamSettings';
+import JetStreamSettings from "./JetStreamSettings";
 
 interface Props {
   jsz: JszQuery;
@@ -27,8 +27,8 @@ export default function JetStreamInfo(props: Props) {
       <div>
         <div class="flex items-center gap-x-3">
           <Indicator
-            color={store.active ? 'green' : 'gray'}
-            title={store.active ? 'Monitoring' : 'Not Monitoring'}
+            color={store.active ? "green" : "gray"}
+            title={store.active ? "Monitoring" : "Not Monitoring"}
           />
 
           <h1
@@ -42,7 +42,7 @@ export default function JetStreamInfo(props: Props) {
         <DetailList>
           <DetailItem
             name="Server Time"
-            value={formatDate(props.jsz.data?.now ?? '', 'UTC')}
+            value={formatDate(props.jsz.data?.now ?? "")}
           />
           <DetailItem
             name="Store Directory"
@@ -65,12 +65,12 @@ export default function JetStreamInfo(props: Props) {
           <Show when={props.jsz.data.config?.sync_always !== undefined}>
             <DetailItem
               name="Sync Always"
-              value={props.jsz.data.config?.sync_always ? 'Yes' : 'No'}
+              value={props.jsz.data.config?.sync_always ? "Yes" : "No"}
             />
           </Show>
           <DetailItem
             name="Compression Allowed"
-            value={props.jsz.data?.config?.compress_ok ? 'Yes' : 'No'}
+            value={props.jsz.data?.config?.compress_ok ? "Yes" : "No"}
           />
         </DetailList>
 
@@ -80,9 +80,9 @@ export default function JetStreamInfo(props: Props) {
       <Badge
         type="pill"
         class="order-first sm:order-none flex-none"
-        color={props.jsz.data?.disabled ? 'red' : 'green'}
+        color={props.jsz.data?.disabled ? "red" : "green"}
       >
-        {props.jsz.data?.disabled ? 'Disabled' : 'Enabled'}
+        {props.jsz.data?.disabled ? "Disabled" : "Enabled"}
       </Badge>
 
       <Show when={props.isLoading}>

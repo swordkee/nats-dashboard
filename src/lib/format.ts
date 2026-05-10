@@ -15,7 +15,13 @@ import type {
   DeliverPolicy,
   AckPolicy,
   ReplayPolicy,
-} from '~/types';
+  Routez,
+  Gatewayz,
+  Leafz,
+  Accountz,
+  AccountStatz,
+  Subsz,
+} from "~/types";
 import {
   formatBytes,
   abbreviateNum,
@@ -29,7 +35,7 @@ import {
   type FormattedBytes,
   type AbbreviatedNumber,
   type Duration,
-} from '~/lib/utils';
+} from "~/lib/utils";
 
 /**
  * Current and previous responses.
@@ -107,7 +113,7 @@ export interface FormattedServerInfo {
 }
 
 /** Format the server information for display. */
-export function formatVarz(varz: APIResponses<'varz'>): FormattedVarz {
+export function formatVarz(varz: APIResponses<"varz">): FormattedVarz {
   const { current, previous } = varz;
 
   const rates = calculateRates({
@@ -120,7 +126,7 @@ export function formatVarz(varz: APIResponses<'varz'>): FormattedVarz {
   return {
     ...current,
     info: {
-      uptime: formatDuration(current?.uptime ?? ''),
+      uptime: formatDuration(current?.uptime ?? ""),
       memory: formatBytes(current?.mem ?? 0),
       conns: abbreviateNum(current?.connections ?? 0),
       totalConns: abbreviateNum(current?.total_connections ?? 0),
@@ -210,7 +216,7 @@ interface ConnectionInfo {
 }
 
 /** Formatted verbose subscription information. */
-export interface FormattedSubDetail extends Omit<SubDetail, 'msgs'> {
+export interface FormattedSubDetail extends Omit<SubDetail, "msgs"> {
   /** Number of messages. */
   msgs: AbbreviatedNumber;
 }
@@ -222,7 +228,7 @@ type ConnectionsMap = Record<number, ConnInfo>;
 const activityWindow = 60;
 
 /** Format the connections data for display. */
-export function formatConnz(connz: APIResponses<'connz'>): FormattedConnz {
+export function formatConnz(connz: APIResponses<"connz">): FormattedConnz {
   const { current, previous } = connz;
 
   /** Map of the previous connections by CID. */
@@ -249,8 +255,8 @@ export function formatConnz(connz: APIResponses<'connz'>): FormattedConnz {
 
       // In the case of a closed connection, idle is always "0s".
       const lastActivity = isOpen
-        ? conn.idle === '0s'
-          ? 'now'
+        ? conn.idle === "0s"
+          ? "now"
           : formatDuration(conn.idle)
         : formatDistance(conn.last_activity);
 
@@ -274,7 +280,7 @@ export function formatConnz(connz: APIResponses<'connz'>): FormattedConnz {
           isOpen,
           isActive: lastActive <= activityWindow,
           uptime: formatDuration(conn.uptime),
-          rtt: formatRTT(conn.rtt ?? ''),
+          rtt: formatRTT(conn.rtt ?? ""),
           start: formatDistance(conn.start),
           stop: conn.stop ? formatDistance(conn.stop) : undefined,
           lastActive,
@@ -319,7 +325,7 @@ export interface FormattedJsz extends Partial<Jsz> {
 }
 
 /** Format the JetStream data for display. */
-export function formatJsz(jsz: APIResponses<'jsz'>): FormattedJsz {
+export function formatJsz(jsz: APIResponses<"jsz">): FormattedJsz {
   const { current } = jsz;
   return {
     ...current,
@@ -380,24 +386,24 @@ interface StreamInfo {
 
 /** Format a stream details object. */
 export function formatStream(stream: StreamDetail): FormattedStreamDetail {
-  const isKVStore = stream.name.startsWith('KV_');
-  const isObjectStore = stream.name.startsWith('OBJ_');
-  const isMQTT = stream.name.startsWith('$MQTT_');
+  const isKVStore = stream.name.startsWith("KV_");
+  const isObjectStore = stream.name.startsWith("OBJ_");
+  const isMQTT = stream.name.startsWith("$MQTT_");
   const isRegular = !isKVStore && !isObjectStore && !isMQTT;
-  let label = 'Stream';
+  let label = "Stream";
 
   if (!isRegular) {
     if (isKVStore) {
-      label = 'KV Store';
+      label = "KV Store";
     } else if (isObjectStore) {
-      label = 'Object Store';
+      label = "Object Store";
     } else if (isMQTT) {
-      if (stream.name.startsWith('$MQTT_msgs')) {
-        label = 'MQTT Messages';
-      } else if (stream.name.startsWith('$MQTT_rmsgs')) {
-        label = 'MQTT Retained Messages';
-      } else if (stream.name.startsWith('$MQTT_sess')) {
-        label = 'MQTT Sessions';
+      if (stream.name.startsWith("$MQTT_msgs")) {
+        label = "MQTT Messages";
+      } else if (stream.name.startsWith("$MQTT_rmsgs")) {
+        label = "MQTT Retained Messages";
+      } else if (stream.name.startsWith("$MQTT_sess")) {
+        label = "MQTT Sessions";
       }
     }
   }
@@ -419,8 +425,8 @@ export function formatStream(stream: StreamDetail): FormattedStreamDetail {
         numDeleted: abbreviateNum(stream.state?.num_deleted ?? 0),
         firstSeq: stream.state?.first_seq ?? 0,
         lastSeq: stream.state?.last_seq ?? 0,
-        firstTS: formatDate(stream.state?.first_ts ?? ''),
-        lastTS: formatDate(stream.state?.last_ts ?? ''),
+        firstTS: formatDate(stream.state?.first_ts ?? ""),
+        lastTS: formatDate(stream.state?.last_ts ?? ""),
       },
     },
   };
@@ -445,25 +451,25 @@ interface StreamConfigInfo {
 }
 
 const retentionPolicies: Record<RetentionPolicy, string> = {
-  limits: 'Limits',
-  interest: 'Interest',
-  workqueue: 'WorkQueue',
+  limits: "Limits",
+  interest: "Interest",
+  workqueue: "WorkQueue",
 };
 
 const discardPolicies: Record<DiscardPolicy, string> = {
-  old: 'Old',
-  new: 'New',
+  old: "Old",
+  new: "New",
 };
 
 const storageTypes: Record<StorageType, string> = {
-  file: 'File',
-  memory: 'Memory',
-  any: 'Any',
+  file: "File",
+  memory: "Memory",
+  any: "Any",
 };
 
 /** Format a stream config object. */
 export function formatStreamConfig(
-  config: StreamConfig
+  config: StreamConfig,
 ): FormattedStreamConfig {
   return {
     ...config,
@@ -473,25 +479,25 @@ export function formatStreamConfig(
       storage: storageTypes[config.storage],
       maxConsumers:
         config.max_consumers === -1
-          ? 'Unlimited'
+          ? "Unlimited"
           : String(config.max_consumers),
       maxMsgs:
         config.max_msgs === -1
-          ? 'Unlimited'
+          ? "Unlimited"
           : abbreviateNum(config.max_msgs).str,
       maxBytes:
         config.max_bytes === -1
-          ? 'Unlimited'
+          ? "Unlimited"
           : formatBytes(config.max_bytes).str,
       maxAge:
-        config.max_age === 0 ? 'Unlimited' : durationFromNs(config.max_age).str,
+        config.max_age === 0 ? "Unlimited" : durationFromNs(config.max_age).str,
       maxMsgsPerSubject:
         config.max_msgs_per_subject === -1
-          ? 'Unlimited'
+          ? "Unlimited"
           : abbreviateNum(config.max_msgs_per_subject).str,
       maxMsgSize:
         config.max_msg_size === -1
-          ? 'Unlimited'
+          ? "Unlimited"
           : config.max_msg_size !== undefined
             ? formatBytes(config.max_msg_size).str
             : undefined,
@@ -537,29 +543,29 @@ interface FormattedConsumer {
 }
 
 const deliverPolicies: Record<DeliverPolicy, string> = {
-  all: 'All',
-  last: 'Last',
-  new: 'New',
-  by_start_sequence: 'By Start Sequence',
-  by_start_time: 'By Start Time',
-  last_per_subject: 'Last Per Subject',
-  undefined: 'Undefined',
+  all: "All",
+  last: "Last",
+  new: "New",
+  by_start_sequence: "By Start Sequence",
+  by_start_time: "By Start Time",
+  last_per_subject: "Last Per Subject",
+  undefined: "Undefined",
 };
 
 const replayPolicies: Record<ReplayPolicy, string> = {
-  instant: 'Instant',
-  original: 'Original',
+  instant: "Instant",
+  original: "Original",
 };
 
 const ackPolicies: Record<AckPolicy, string> = {
-  none: 'None',
-  all: 'All',
-  explicit: 'Explicit',
+  none: "None",
+  all: "All",
+  explicit: "Explicit",
 };
 
 /** Format consumer information. */
 export function formatConsumerInfo(
-  consumer: ConsumerInfo
+  consumer: ConsumerInfo,
 ): FormattedConsumerInfo {
   return {
     ...consumer,
@@ -574,17 +580,17 @@ export function formatConsumerInfo(
       config: {
         deliverPolicy: consumer.config?.deliver_policy
           ? deliverPolicies[consumer.config?.deliver_policy]
-          : 'Unknown',
+          : "Unknown",
         replayPolicy: consumer.config?.replay_policy
           ? replayPolicies[consumer.config?.replay_policy]
-          : 'Unknown',
+          : "Unknown",
         ackPolicy: consumer.config?.ack_policy
           ? ackPolicies[consumer.config?.ack_policy]
-          : 'Unknown',
+          : "Unknown",
         maxDeliver:
           consumer.config?.max_deliver !== undefined
             ? consumer.config?.max_deliver === -1
-              ? 'Unlimited'
+              ? "Unlimited"
               : abbreviateNum(consumer.config?.max_deliver).str
             : undefined,
         maxWaiting:
@@ -598,7 +604,7 @@ export function formatConsumerInfo(
         maxAckPending:
           consumer.config?.max_ack_pending !== undefined
             ? consumer.config?.max_ack_pending === -1
-              ? 'Unlimited'
+              ? "Unlimited"
               : abbreviateNum(consumer.config?.max_ack_pending).str
             : undefined,
         backoff: consumer.config?.backoff?.map((d) => durationFromNs(d).str),
@@ -613,6 +619,265 @@ export function formatConsumerInfo(
           consumer.ack_floor.last_active &&
           formatDate(consumer.ack_floor.last_active),
       },
+    },
+  };
+}
+
+/** Formatted route information. */
+export interface FormattedRoutez extends Omit<Partial<Routez>, "routes"> {
+  routes: FormattedRouteInfo[];
+}
+
+/** Formatted individual route information. */
+export interface FormattedRouteInfo {
+  rid: number;
+  remote_id: string;
+  remote_name: string;
+  did_solicit: boolean;
+  is_configured: boolean;
+  ip: string;
+  port: number;
+  start: string;
+  last_activity: string;
+  rtt?: string;
+  uptime: string;
+  idle: string;
+  pending_size: number;
+  in_msgs: number;
+  out_msgs: number;
+  in_bytes: number;
+  out_bytes: number;
+  subscriptions: number;
+  subscriptions_list?: string[];
+  info: {
+    uptime: string;
+    rtt: string;
+    start: string;
+    lastActivity: string;
+    idle: string;
+    inMsgs: AbbreviatedNumber;
+    outMsgs: AbbreviatedNumber;
+    inBytes: FormattedBytes;
+    outBytes: FormattedBytes;
+    pendingSize: FormattedBytes;
+    subscriptionsList: string[] | undefined;
+  };
+}
+
+/** Format the routes data for display. */
+export function formatRoutez(routez: APIResponses<"routez">): FormattedRoutez {
+  const { current } = routez;
+
+  const routes: FormattedRouteInfo[] =
+    current?.routes?.map((route) => ({
+      rid: route.rid,
+      remote_id: route.remote_id,
+      remote_name: route.remote_name,
+      did_solicit: route.did_solicit,
+      is_configured: route.is_configured,
+      ip: route.ip,
+      port: route.port,
+      start: route.start,
+      last_activity: route.last_activity,
+      uptime: route.uptime,
+      idle: route.idle,
+      pending_size: route.pending_size,
+      in_msgs: route.in_msgs,
+      out_msgs: route.out_msgs,
+      in_bytes: route.in_bytes,
+      out_bytes: route.out_bytes,
+      subscriptions: route.subscriptions,
+      ...(route.rtt !== undefined && { rtt: route.rtt }),
+      ...(route.subscriptions_list && {
+        subscriptions_list: route.subscriptions_list,
+      }),
+      info: {
+        uptime: formatDuration(route.uptime),
+        rtt: formatRTT(route.rtt ?? ""),
+        start: formatDate(route.start),
+        lastActivity: formatDistance(route.last_activity),
+        idle: formatDuration(route.idle),
+        inMsgs: abbreviateNum(route.in_msgs),
+        outMsgs: abbreviateNum(route.out_msgs),
+        inBytes: formatBytes(route.in_bytes),
+        outBytes: formatBytes(route.out_bytes),
+        pendingSize: formatBytes(route.pending_size),
+        subscriptionsList: route.subscriptions_list?.slice().sort(),
+      },
+    })) ?? [];
+
+  return {
+    ...current,
+    routes,
+  };
+}
+
+/** Formatted gateway information. */
+export interface FormattedGatewayz extends Partial<Gatewayz> {
+  info: {
+    numOutboundGateways: number;
+    numInboundGateways: number;
+  };
+}
+
+/** Format the gateways data for display. */
+export function formatGatewayz(
+  gatewayz: APIResponses<"gatewayz">,
+): FormattedGatewayz {
+  const { current } = gatewayz;
+
+  const numOutboundGateways = Object.keys(
+    current?.outbound_gateways ?? {},
+  ).length;
+  const numInboundGateways = Object.values(
+    current?.inbound_gateways ?? {},
+  ).reduce((sum, gws) => sum + gws.length, 0);
+
+  return {
+    ...current,
+    info: {
+      numOutboundGateways,
+      numInboundGateways,
+    },
+  };
+}
+
+/** Formatted leaf node information. */
+export interface FormattedLeafz extends Omit<Partial<Leafz>, "leafs"> {
+  leafs: FormattedLeafInfo[];
+}
+
+/** Formatted individual leaf node information. */
+export interface FormattedLeafInfo {
+  name: string;
+  is_spoke: boolean;
+  account: string;
+  ip: string;
+  port: number;
+  rtt?: string;
+  in_msgs: number;
+  out_msgs: number;
+  in_bytes: number;
+  out_bytes: number;
+  subscriptions: number;
+  subscriptions_list?: string[];
+  info: {
+    rtt: string;
+    inMsgs: AbbreviatedNumber;
+    outMsgs: AbbreviatedNumber;
+    inBytes: FormattedBytes;
+    outBytes: FormattedBytes;
+    subscriptionsList: string[] | undefined;
+  };
+}
+
+/** Format the leaf nodes data for display. */
+export function formatLeafz(leafz: APIResponses<"leafz">): FormattedLeafz {
+  const { current } = leafz;
+
+  const leafs: FormattedLeafInfo[] =
+    current?.leafs?.map((leaf) => ({
+      name: leaf.name,
+      is_spoke: leaf.is_spoke,
+      account: leaf.account,
+      ip: leaf.ip,
+      port: leaf.port,
+      in_msgs: leaf.in_msgs,
+      out_msgs: leaf.out_msgs,
+      in_bytes: leaf.in_bytes,
+      out_bytes: leaf.out_bytes,
+      subscriptions: leaf.subscriptions,
+      ...(leaf.rtt !== undefined && { rtt: leaf.rtt }),
+      ...(leaf.subscriptions_list && {
+        subscriptions_list: leaf.subscriptions_list,
+      }),
+      info: {
+        rtt: formatRTT(leaf.rtt ?? ""),
+        inMsgs: abbreviateNum(leaf.in_msgs),
+        outMsgs: abbreviateNum(leaf.out_msgs),
+        inBytes: formatBytes(leaf.in_bytes),
+        outBytes: formatBytes(leaf.out_bytes),
+        subscriptionsList: leaf.subscriptions_list?.slice().sort(),
+      },
+    })) ?? [];
+
+  return {
+    ...current,
+    leafs,
+  };
+}
+
+/** Formatted account information. */
+export interface FormattedAccountz extends Partial<Accountz> {
+  info: {
+    numAccounts: number;
+  };
+}
+
+/** Format the accounts data for display. */
+export function formatAccountz(
+  accountz: APIResponses<"accountz">,
+): FormattedAccountz {
+  const { current } = accountz;
+
+  return {
+    ...current,
+    info: {
+      numAccounts: current?.accounts?.length ?? 0,
+    },
+  };
+}
+
+/** Formatted account statistics. */
+export interface FormattedAccountStatz extends Partial<AccountStatz> {
+  info: {
+    numAccounts: number;
+  };
+}
+
+/** Format the account statistics data for display. */
+export function formatAccountStatz(
+  accstatz: APIResponses<"accstatz">,
+): FormattedAccountStatz {
+  const { current } = accstatz;
+
+  return {
+    ...current,
+    info: {
+      numAccounts: current?.account_statz?.length ?? 0,
+    },
+  };
+}
+
+/** Formatted subscriptions information. */
+export interface FormattedSubsz extends Partial<Subsz> {
+  info: {
+    numSubscriptions: AbbreviatedNumber;
+    numCache: AbbreviatedNumber;
+    numInserts: AbbreviatedNumber;
+    numRemoves: AbbreviatedNumber;
+    numMatches: AbbreviatedNumber;
+    cacheHitRate: string;
+    maxFanout: AbbreviatedNumber;
+    avgFanout: string;
+  };
+}
+
+/** Format the subscriptions data for display. */
+export function formatSubsz(subsz: APIResponses<"subsz">): FormattedSubsz {
+  const { current } = subsz;
+
+  return {
+    ...current,
+    info: {
+      numSubscriptions: abbreviateNum(current?.num_subscriptions ?? 0),
+      numCache: abbreviateNum(current?.num_cache ?? 0),
+      numInserts: abbreviateNum(current?.num_inserts ?? 0),
+      numRemoves: abbreviateNum(current?.num_removes ?? 0),
+      numMatches: abbreviateNum(current?.num_matches ?? 0),
+      cacheHitRate: `${((current?.cache_hit_rate ?? 0) * 100).toFixed(2)}%`,
+      maxFanout: abbreviateNum(current?.max_fanout ?? 0),
+      avgFanout: (current?.avg_fanout ?? 0).toFixed(2),
     },
   };
 }
