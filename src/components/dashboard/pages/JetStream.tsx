@@ -19,6 +19,8 @@ import JetStreamStats from '~/components/dashboard/jetstream/JetStreamStats';
 import AccountTabs from '~/components/dashboard/jetstream/AccountTabs';
 import AccountInfo from '~/components/dashboard/jetstream/AccountInfo';
 import StreamsList from '~/components/dashboard/jetstream/StreamsList';
+import StreamBrowser from '~/components/dashboard/jetstream/StreamBrowser';
+import { formatStream } from '~/lib/format';
 
 export default function JetStream() {
   const [store, actions] = useStore();
@@ -27,10 +29,17 @@ export default function JetStream() {
   const jsz = useJsz(() => settings.jsz.query);
 
   const [selected, setSelected] = createSignal<string | undefined>();
+  const [showBrowser, setShowBrowser] = createSignal(false);
 
   const account = createMemo(
     () => jsz.data?.account_details?.find((a) => a.id === selected())
   );
+
+  // Format all streams for the browser
+  const allStreams = createMemo(() => {
+    const streams = account()?.stream_detail ?? [];
+    return streams.map(formatStream);
+  });
 
   createEffect(() => {
     // Select the first account in the list when we get the data
@@ -82,7 +91,25 @@ export default function JetStream() {
           </Show>
 
           <Show when={settings.jsz.query.streams && account()?.stream_detail}>
-            {(streams) => <StreamsList streams={streams()} />}
+            {(streams) => (
+              <div class="space-y-4">
+                <div class="flex justify-end">
+                  <Button
+                    color="secondary"
+                    size="sm"
+                    onClick={() => setShowBrowser(!showBrowser())}
+                  >
+                    {showBrowser() ? 'Hide Browser' : 'Open Browser'}
+                  </Button>
+                </div>
+                <Show
+                  when={showBrowser()}
+                  fallback={<StreamsList streams={streams()} />}
+                >
+                  <StreamBrowser streams={allStreams()} />
+                </Show>
+              </div>
+            )}
           </Show>
         </Match>
 

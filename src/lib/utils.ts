@@ -368,3 +368,23 @@ export function formatDate(dateString: string, timeZone?: string): string {
 export function removeExt(path: string): string {
   return path.replace(/\.[^/.]+$/, '');
 }
+
+/**
+ * Decode a base64 encoded string to UTF-8.
+ */
+export function decodeBase64(base64: string): string {
+  try {
+    // Decode base64 to binary string
+    const binaryString = atob(base64);
+    // Convert binary string to UTF-8
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    // Decode bytes to UTF-8 string
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch (error) {
+    console.error('Failed to decode base64:', error);
+    return base64;
+  }
+}

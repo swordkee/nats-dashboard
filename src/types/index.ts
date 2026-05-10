@@ -10,3 +10,4 @@ export * from './accountz';
 export * from './accstatz';
 export * from './jsz';
 export * from './healthz';
+export * from './streammsgs';

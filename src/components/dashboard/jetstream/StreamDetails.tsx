@@ -11,6 +11,8 @@ import Button from '~/components/Button';
 import StreamInfo from './StreamInfo';
 import StreamConfig from './StreamConfig';
 import ConsumerDetails from './ConsumerDetails';
+import MessageViewer from './MessageViewer';
+import KVStoreBrowser from './KVStoreBrowser';
 
 interface Props {
   stream: FormattedStreamDetail;
@@ -28,6 +30,9 @@ export default function StreamDetails(props: Props) {
     setTab(i);
   };
 
+  // Determine if this is a KV store stream
+  const isKVStore = () => props.stream.info.isKVStore;
+
   return (
     <>
       <Tabs>
@@ -39,6 +44,9 @@ export default function StreamDetails(props: Props) {
         </Tab>
         <Tab active={tab() === 2} onClick={updateTab(2)}>
           Consumers
+        </Tab>
+        <Tab active={tab() === 3} onClick={updateTab(3)}>
+          {isKVStore() ? 'KV Entries' : 'Messages'}
         </Tab>
       </Tabs>
 
@@ -124,6 +132,19 @@ export default function StreamDetails(props: Props) {
                       Fetch Consumers
                     </Button>
                   </div>
+                </Match>
+              </Switch>
+            </TabPanel>
+          </Match>
+
+          <Match when={tab() === 3}>
+            <TabPanel>
+              <Switch>
+                <Match when={isKVStore()}>
+                  <KVStoreBrowser streamName={props.stream.name} />
+                </Match>
+                <Match when={!isKVStore()}>
+                  <MessageViewer streamName={props.stream.name} />
                 </Match>
               </Switch>
             </TabPanel>
